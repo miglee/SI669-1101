@@ -42,6 +42,11 @@ this.dataService.getObservable().subscribe(update => {
     this.entries = dataService.getEntries();
   }
 
+
+  // public ionViewWillEnter() {
+  //   this.entries = this.entryService.getEntries();
+  // }
+
   public addEntry() {
     this.navCtrl.push(EntryDetailPage);
   }
@@ -51,6 +56,13 @@ this.dataService.getObservable().subscribe(update => {
     debugger;
     console.log("editing entry ", entryID);
     this.navCtrl.push(EntryDetailPage, {"entryID": entryID});
+  }
+
+
+
+  private deleteEntry(entryID: number) {
+    this.dataService.removeEntry(entryID);
+    console.log("deleting entry", entryID);
   }
 }
 

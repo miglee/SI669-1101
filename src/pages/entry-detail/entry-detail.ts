@@ -35,7 +35,9 @@ export class EntryDetailPage {
 
 
     let entryID = this.navParams.get("entryID");
+    console.log("preparing to load up entry with id ", entryID);
     let entry = this.dataService.getEntryByID(entryID);
+    console.log("retrieved entry:", entry);
     
 if (entryID === undefined) {
         this.entry = new Entry();
@@ -43,7 +45,7 @@ if (entryID === undefined) {
         this.entry.text = "";
         this.entry.id = -1; // placeholder for 'temporary' entry
       } else {
-        this.entry = this.entryDataService.getEntryByID(entryID);
+        this.entry = this.dataService.getEntryByID(entryID);
       }
       console.log("entry is ", this.entry);
   };
@@ -53,17 +55,23 @@ if (entryID === undefined) {
   }
 
   private saveEntry() {
+
+    // 
     // let newEntry = new Entry();
     // newEntry.title = this.entryTitle;
     // newEntry.text = this.entryText;
+// 
+
+
+
     // this won't work. you can't take variable straight from anotehr page.
     // HomePage.entries.push(newEntry);
     // sisn't work
     // entries.push(newEntry); 
-    console.log("Now I would save the entry: ", newEntry);
-    console.log(JSON.stringify(newEntry));
+    // console.log("Now I would save the entry: ", newEntry);
+    // console.log(JSON.stringify(newEntry));
 
-    this.dataService.addEntry(newEntry);
+    this.dataService.addEntry(this.entry);
     this.navCtrl.pop();
   }
 

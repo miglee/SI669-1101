@@ -25,6 +25,23 @@ private nextID: number = 0;
       this.serviceObserver = observerThatWasCreated;
     });
     
+    this.storage.get("myDiaryEntries").then(data => {
+      if (data != undefined && data != null) {
+        this.entries = JSON.parse(data);
+        this.notifySubscribers();
+      }
+    }, err => {
+      console.log(err);
+    });
+    
+   this.storage.get("nextID").then(data => {
+      if (data != undefined && data != null) {
+        this.nextID = data;
+        console.log("got nextID: ", this.nextID);
+      }
+    }, err => {
+      console.log(err);
+    })
   }
 
 
@@ -48,17 +65,17 @@ private loadFakeEntries() {
     this.entries = [
       {
         id: this.getUniqueID(),
-        title: "Latest Entry",
+        title: "Entry A",
         text: "Today I went to my favorite class, SI 669. It was super great."
       },
       {
         id: this.getUniqueID(),
-        title: "Earlier Entry",
+        title: "Entry B",
         text: "I can't wait for Halloween! I'm going to eat so much candy!!!"
       },
       {
         id: this.getUniqueID(),
-        title: "First Entry",
+        title: "Entry C",
         text: "OMG Project 1 was the absolute suck!"
       }
     ];
@@ -69,12 +86,16 @@ private loadFakeEntries() {
     entry.id = this.getUniqueID();
     this.entries.push(entry);
     this.notifySubscribers();
+    this.saveData();
     console.log("Added an entry, the list is now: ", this.entries);
   }
 
 
   private getUniqueID(): number {
-    return this.nextID++;
+ 
+    let uniqueID = this.nextID++;
+    this.storage.set("nextID", this.nextID);
+    return uniqueID;
   }
 
   
@@ -86,6 +107,44 @@ private loadFakeEntries() {
       }
     }
     return undefined;
+  }
+
+
+
+  public updateEntry(id: number, newEntry: Entry): void {
+    let entryToUpdate: Entry = this.findEntryByID(id); 
+    entryToUpdate.title = newEntry.title;
+    entryToUpdate.text = newEntry.text;
+    this.notifySubscribers();
+    this.saveData();
+  }
+  
+  private findEntryByID(id: number): Entry {
+    for (let e of this.entries) {
+      if (e.id === id) {
+         return e;
+      }
+    }
+    return undefined;
+  }
+
+
+  public removeEntry(id: number): void {
+    for (let i = 0; i < this.entries.length; i++) {
+      let iID = this.entries[i].id;
+      if (iID === id) {
+        this.entries.splice(i, 1);
+        break;
+      }
+    }
+    this.notifySubscribers();
+    this.saveData();
+  }
+
+
+  private saveData(): void {
+    let key = "myDiaryEntries";
+    this.storage.set(key, JSON.stringify(this.entries));
   }
 
 }
